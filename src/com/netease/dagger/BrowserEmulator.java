@@ -32,6 +32,7 @@ import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.safari.SafariDriver;
 import org.testng.Assert;
 import com.thoughtworks.selenium.Wait;
 
@@ -82,6 +83,11 @@ public class BrowserEmulator {
 			capabilities.setCapability(InternetExplorerDriver.INTRODUCE_FLAKINESS_BY_IGNORING_SECURITY_DOMAINS, true);
 			browserCore = new InternetExplorerDriver(capabilities);
 			logger.info("Using IE");
+			return;
+		}
+		if (type == 4) {
+			browserCore = new SafariDriver();
+			logger.info("Using Safari");
 			return;
 		}
 
