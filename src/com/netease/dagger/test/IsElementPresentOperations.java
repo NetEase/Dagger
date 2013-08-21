@@ -8,7 +8,7 @@ import org.testng.annotations.Test;
 import com.netease.dagger.BrowserEmulator;
 
 /**
- * �ж�Ԫ���Ƿ����
+ * 判断元素是否存在
  * @author WeiYating
  */
 public class IsElementPresentOperations {
@@ -39,11 +39,11 @@ public class IsElementPresentOperations {
 	@DataProvider
 	public Object [][] data(){
 		return new Object[][]{
-				{"//a[text()='�ɼ�ڵ� - app']",		true},
-				{"//div[text()='�ɼ�ڵ� - dust']",	true},
-				{"//li[text()='�ɼ�ڵ� - lte']",		true},
-				{"//li[text()='���ɼ�ڵ� - dsp']",	false},
-				{"//li[text()='���ɼ�ڵ� - vsb']",	false},
+				{"//a[text()='可见节点 - app']",		true},
+				{"//div[text()='可见节点 - dust']",	true},
+				{"//li[text()='可见节点 - lte']",		true},
+				{"//li[text()='不可见节点 - dsp']",	false},
+				{"//li[text()='不可见节点 - vsb']",	false},
 		};
 	}
 }
