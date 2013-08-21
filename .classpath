@@ -2,8 +2,8 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
-	<classpathentry kind="lib" path="lib/selenium-standalone-re-html.jar" sourcepath="lib/selenium-standalone-re-html.jar"/>
 	<classpathentry kind="lib" path="lib/testng-re-html.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.16.jar"/>
+	<classpathentry kind="lib" path="lib/selenium-server-standalone-2.29.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

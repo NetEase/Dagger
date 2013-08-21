@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2012-2013 NetEase, Inc. and other contributors
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
 package com.netease.dagger;
 
 import java.awt.AWTException;
@@ -16,6 +32,7 @@ import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.safari.SafariDriver;
 import org.testng.Assert;
 import com.thoughtworks.selenium.Wait;
 
@@ -29,19 +46,18 @@ public class BrowserEmulator {
 	ChromeDriverService chromeServer;
 	JavascriptExecutor javaScriptExecutor;
 	
-	int stepInterval = Integer.parseInt(GlobalSettings.StepInterval);
-	int timeout = Integer.parseInt(GlobalSettings.Timeout);
+	int stepInterval = Integer.parseInt(GlobalSettings.stepInterval);
+	int timeout = Integer.parseInt(GlobalSettings.timeout);
 	
 	private static Logger logger = Logger.getLogger(BrowserEmulator.class.getName());
 
 	public BrowserEmulator() {
-		setupBrowserCoreType(GlobalSettings.BrowserCoreType);
-		browser = new WebDriverBackedSelenium(browserCore, "www.163.com");
+		setupBrowserCoreType(GlobalSettings.browserCoreType);
+		browser = new WebDriverBackedSelenium(browserCore, "http://www.163.com/");
 		javaScriptExecutor = (JavascriptExecutor) browserCore;
 		logger.info("Started BrowserEmulator");
 	}
 
-	@SuppressWarnings("deprecation")
 	private void setupBrowserCoreType(int type) {
 		if (type == 1) {
 			browserCore = new FirefoxDriver();
@@ -49,7 +65,7 @@ public class BrowserEmulator {
 			return;
 		}
 		if (type == 2) {
-			chromeServer = new ChromeDriverService.Builder().usingChromeDriverExecutable(new File(GlobalSettings.ChromeDriverPath)).usingAnyFreePort().build();
+			chromeServer = new ChromeDriverService.Builder().usingDriverExecutable(new File(GlobalSettings.chromeDriverPath)).usingAnyFreePort().build();
 			try {
 				chromeServer.start();
 			} catch (IOException e) {
@@ -62,11 +78,16 @@ public class BrowserEmulator {
 			return;
 		}
 		if (type == 3) {
-			System.setProperty("webdriver.ie.driver", GlobalSettings.IEDriverPath);
+			System.setProperty("webdriver.ie.driver", GlobalSettings.ieDriverPath);
 			DesiredCapabilities capabilities = DesiredCapabilities.internetExplorer();
 			capabilities.setCapability(InternetExplorerDriver.INTRODUCE_FLAKINESS_BY_IGNORING_SECURITY_DOMAINS, true);
 			browserCore = new InternetExplorerDriver(capabilities);
 			logger.info("Using IE");
+			return;
+		}
+		if (type == 4) {
+			browserCore = new SafariDriver();
+			logger.info("Using Safari");
 			return;
 		}
 
@@ -119,7 +140,7 @@ public class BrowserEmulator {
 	public void quit() {
 		pause(stepInterval);
 		browserCore.quit();
-		if (GlobalSettings.BrowserCoreType == 2) {
+		if (GlobalSettings.browserCoreType == 2) {
 			chromeServer.stop();
 		}
 		logger.info("Quitted BrowserEmulator");
@@ -201,10 +222,10 @@ public class BrowserEmulator {
 		pause(stepInterval);
 		expectElementExistOrNot(true, xpath, timeout);
 
-		if (GlobalSettings.BrowserCoreType == 1) {
+		if (GlobalSettings.browserCoreType == 1) {
 			Assert.fail("Mouseover is not supported for Firefox now");
 		}
-		if (GlobalSettings.BrowserCoreType == 2) {
+		if (GlobalSettings.browserCoreType == 2) {
 			// First make mouse out of browser
 			Robot rb = null;
 			try {
@@ -227,7 +248,7 @@ public class BrowserEmulator {
 			logger.info("Mouseover " + xpath);
 			return;
 		} 
-		if (GlobalSettings.BrowserCoreType == 3) {
+		if (GlobalSettings.browserCoreType == 3) {
 			Assert.fail("Mouseover is not supported for IE now");
 		}
 		
@@ -311,7 +332,7 @@ public class BrowserEmulator {
 			try {
 				new Wait() {
 					public boolean until() {
-						return isTextPresent(text);
+						return isTextPresent(text, -1);
 					}
 				}.wait("Failed to find text " + text, timeout);
 			} catch (Exception e) {
@@ -320,8 +341,7 @@ public class BrowserEmulator {
 			}
 			logger.info("Found desired text " + text);
 		} else {
-			pause(timeout);
-			if (isTextPresent(text)) {
+			if (isTextPresent(text, timeout)) {
 				handleFailure("Found undesired text " + text);
 			} else {
 				logger.info("Not found undesired text " + text);
@@ -346,7 +366,7 @@ public class BrowserEmulator {
 			try {
 				new Wait() {
 					public boolean until() {
-						return isElementPresent(xpath);
+						return isElementPresent(xpath, -1);
 					}
 				}.wait("Failed to find element " + xpath, timeout);
 			} catch (Exception e) {
@@ -355,8 +375,7 @@ public class BrowserEmulator {
 			}
 			logger.info("Found desired element " + xpath);
 		} else {
-			pause(timeout);
-			if (isElementPresent(xpath)) {
+			if (isElementPresent(xpath, timeout)) {
 				handleFailure("Found undesired element " + xpath);
 			} else {
 				logger.info("Not found undesired element " + xpath);
@@ -368,9 +387,13 @@ public class BrowserEmulator {
 	 * Is the text present on the page
 	 * @param text
 	 *            the expected text
+	 * @param time           
+	 *            wait a moment (in millisecond) before search text on page;<br>
+	 *            minus time means search text at once
 	 * @return
 	 */
-	public boolean isTextPresent(String text) {
+	public boolean isTextPresent(String text, int time) {
+		pause(time);
 		boolean isPresent = browser.isTextPresent(text);
 		if (isPresent) {
 			logger.info("Found text " + text);
@@ -386,9 +409,13 @@ public class BrowserEmulator {
 	 * Here <b>present</b> means <b>visible</b>
 	 * @param xpath
 	 *            the expected element's xpath
+	 * @param time           
+	 *            wait a moment (in millisecond) before search element on page;<br>
+	 *            minus time means search element at once
 	 * @return
 	 */
-	public boolean isElementPresent(String xpath) {
+	public boolean isElementPresent(String xpath, int time) {
+		pause(time);
 		boolean isPresent = browser.isElementPresent(xpath) && browserCore.findElementByXPath(xpath).isDisplayed();
 		if (isPresent) {
 			logger.info("Found element " + xpath);
@@ -403,9 +430,13 @@ public class BrowserEmulator {
 	 * Pause
 	 * @param time in millisecond
 	 */
-	private void pause(int time) {
+	public void pause(int time) {
+		if (time <= 0) {
+			return;
+		}
 		try {
 			Thread.sleep(time);
+			logger.info("Pause " + time + " ms");
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
