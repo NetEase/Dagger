@@ -37,6 +37,18 @@ Already have an autotest framework? Please build Dagger into a .jar file to use,
 
 * NetEase, Inc.
 
+## How to contribute
+
+You are welcome to contribute to Dagger as follow
+
+* add/edit wiki
+* report/fix issue
+* code review
+* commit new feature
+* add testcase/demo
+
+And it's *NOT* recommended to submit pull request directly to Dagger's `master` branch
+
 ## License
 
 (The Apache License)

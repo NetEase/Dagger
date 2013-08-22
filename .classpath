@@ -5,5 +5,6 @@
 	<classpathentry kind="lib" path="lib/testng-re-html.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.16.jar"/>
 	<classpathentry kind="lib" path="lib/selenium-server-standalone-2.29.0.jar"/>
+	<classpathentry kind="lib" path="lib/jxl-2.6.12.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
