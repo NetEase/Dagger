@@ -18,6 +18,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  * ImageProcess contains APIs for screen shot and image process
+ * @author LingFei
  */
 public class ImageProcess {
 	

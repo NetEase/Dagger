@@ -1,6 +1,6 @@
 ## Dagger - a light, robust Web UI autotest framework
 
-Dagger is a light, robust Web UI autotest framework based on [Selenium](http://seleniumhq.org/) and [TestNg](http://testng.org/doc/index.html).（中文介绍参见[这里](https://github.com/NetEase/Dagger/wiki/Dagger)）
+Dagger is a light, robust Web UI autotest framework based on [Selenium](http://seleniumhq.org/) and [TestNG](http://testng.org/doc/index.html).（中文介绍参见[这里](https://github.com/NetEase/Dagger/wiki/Dagger)）
 
 > Dagger is an automation framework first, it provides APIs to control browsers;
 > 
@@ -11,33 +11,35 @@ Dagger is a light, robust Web UI autotest framework based on [Selenium](http://s
 * Wiki: <https://github.com/NetEase/Dagger/wiki>
 * Issues: <https://github.com/NetEase/Dagger/issues>
 * Javadoc: <http://netease.github.com/Dagger>
-* Tags: Selenium, TestNg, autotest
+* Tags: Selenium, TestNG, autotest
 
 ## Features
 
 * Easy to learn while only less then 20 APIs altogether, see [this](http://netease.github.com/Dagger/classcom_1_1netease_1_1dagger_1_1_browser_emulator.html).
-* Providing a quickstart, see [this](https://github.com/NetEase/Dagger/wiki/Quick-Start).
-* High speed with parallel mode which is indeed TestNg's feature, see [this](https://github.com/NetEase/Dagger/wiki/Parallel-Mode)
+* Providing a quick start, see [this](https://github.com/NetEase/Dagger/wiki/Quick-Start).
+* High speed with parallel mode which is indeed TestNG's feature, see [this](https://github.com/NetEase/Dagger/wiki/Parallel-Mode)
 * High stability with a trick on TestNg to retry failed/skipped testcases automatically, see [this](https://github.com/NetEase/Dagger/wiki/Retry-Failed-Or-Skipped-Testcases).
-* Using Chrome as default browser which is much more quick and stable than Firefox and IE. 
+* Using Chrome as default browser which is much quicker and more stable than both Firefox and IE. 
 * Firefox and IE are also supported.
-* Capture screenshot automatically when testcase failed.
+* Capture screenshot automatically when testcase fails.
 
-## Coming soon
+## Coming Soon
 
-* Integrating Flex/Flash automation.
+* Integration with Flex/Flash automation.
 
-## How to use Dagger
+## How to Use
 
-Dagger is quite suitable for a small group to kick off Web UI autotest, for this case, just checkout Dagger with Eclipse and write testcases within it.
+Dagger is quite suitable for a small group to kick off Web UI autotest. For this case, just checkout Dagger with Eclipse and write testcases with it.
 
-Already have an autotest framework? Please build Dagger into a .jar file to use, see [this](https://github.com/NetEase/Dagger/wiki/FAQ) 
+Already have an autotest framework? Please build Dagger into a .jar file before use, see [this](https://github.com/NetEase/Dagger/wiki/FAQ). 
+But first, you should download the [selenium-server-standalone-2.33.0.jar](https://selenium.googlecode.com/files/selenium-server-standalone-2.33.0.jar), or the latest one from [here](https://code.google.com/p/selenium/downloads/list).
 
 ## Contributors
 
 * NetEase, Inc.
+* chenDoInG
 
-## How to contribute
+## How to Contribute
 
 You are welcome to contribute to Dagger as follow
 
@@ -47,7 +49,12 @@ You are welcome to contribute to Dagger as follow
 * commit new feature
 * add testcase/demo
 
-And it's *NOT* recommended to submit pull request directly to Dagger's `master` branch
+Meanwhile you'd better follow the rules below
+
+* It's *NOT* recommended to submit a pull request directly to Dagger's `master` branch. `develop` branch is more appropriate
+* Follow common Java coding conventions
+* Put all Java class files under *com.netease* package
+* Add the following [license](#license) in each Java class file
 
 ## License
 
