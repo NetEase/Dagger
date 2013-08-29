@@ -1,4 +1,4 @@
-package com.chendoing.datadriver;
+package com.netease.datadriver;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -20,7 +20,6 @@ import jxl.*;
  * @ClassName: ExcelDataProvider
  * @Description: TODO(读取Excel数据)
  * @author chenDoInG
- * @date 2013-8-13 上午9:21:21
  */
 public class ExcelDataProvider implements Iterator<Object[]> {
 

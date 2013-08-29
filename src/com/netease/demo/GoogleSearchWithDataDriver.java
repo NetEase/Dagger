@@ -9,15 +9,19 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import com.chendoing.datadriver.ExcelDataProvider;
 import com.netease.dagger.BrowserEmulator;
-
+import com.netease.datadriver.ExcelDataProvider;
+/**
+ * 
+ * @author Chenkan
+ *
+ */
 public class GoogleSearchWithDataDriver {
     
     BrowserEmulator browserEmulator;
 
     @BeforeClass
-    public void setUp() throws Exception{
+    public void setUp() throws Exception {
         browserEmulator = new BrowserEmulator();
     }
     @Test(dataProvider = "dp" )
@@ -29,11 +33,11 @@ public class GoogleSearchWithDataDriver {
     }
    
     @AfterClass(alwaysRun = true)
-    public void tearDown(){
+    public void tearDown() {
         browserEmulator.quit();
     }
     @DataProvider(name = "dp")
-    public Iterator<Object[]> dataFortestMethod(Method method) throws IOException{
+    public Iterator<Object[]> dataFortestMethod(Method method) throws IOException {
         return new ExcelDataProvider(this.getClass().getName(),method.getName());
     }
    

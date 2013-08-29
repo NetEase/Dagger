@@ -1,0 +1,53 @@
+<suite reruntimes="2" thread-count="1" parallel="tests" verbose="10"
+	name="self-test" annotations="JDK" time-out="1800000">
+
+	<test name="ClickOperations" junit="false" annotations="JDK">
+		<classes>
+			<class name="com.netease.test.ClickOperations" />
+		</classes>
+	</test>
+
+	<test name="ExecuteJS" junit="false" annotations="JDK">
+		<classes>
+			<class name="com.netease.test.ExecuteJS" />
+		</classes>
+	</test>
+
+	<test name="IsElementPresentOperations" junit="false" annotations="JDK">
+		<classes>
+			<class name="com.netease.test.IsElementPresentOperations" />
+		</classes>
+	</test>
+
+	<test name="IsTextPresentOperations" junit="false" annotations="JDK">
+		<classes>
+			<class name="com.netease.test.IsTextPresentOperations" />
+		</classes>
+	</test>
+
+	<test name="MouseOverOperations" junit="false" annotations="JDK">
+		<classes>
+			<class name="com.netease.test.MouseOverOperations" />
+		</classes>
+	</test>
+
+	<test name="OpenURL" junit="false" annotations="JDK">
+		<classes>
+			<class name="com.netease.test.OpenURL" />
+		</classes>
+	</test>
+
+	<test name="SelectWindow" junit="false" annotations="JDK">
+		<classes>
+			<class name="com.netease.test.SelectWindow" />
+		</classes>
+	</test>
+
+	<test name="TypeOperations" junit="false" annotations="JDK">
+		<classes>
+			<class name="com.netease.test.TypeOperations" />
+		</classes>
+	</test>
+
+
+</suite>

@@ -38,6 +38,7 @@ import com.thoughtworks.selenium.Wait;
 
 /**
  * BrowserEmulator is based on Selenium2 and adds some enhancements
+ * @author ChenKan
  */
 public class BrowserEmulator {
 
