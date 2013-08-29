@@ -5,11 +5,12 @@
 
 	<path id="cpath">
 		<fileset dir="lib">
-			<include name="testng-re-html.jar"/>
+			<include name="testng-re-html.jar" />
 			<include name="log4j-1.2.16.jar" />
+			<include name="jxl-2.6.12.jar" />
 		</fileset>
 		<fileset dir="lib">
-			<include name="selenium-server-standalone-2.29.0.jar" />
+			<include name="selenium-server-standalone-2.33.0.jar" />
 		</fileset>
 	</path>
 
@@ -21,31 +22,53 @@
 	<target name="compile">
 		<delete dir="bin" />
 		<mkdir dir="bin" />
-		<javac source="1.6" target="1.6" compiler="org.eclipse.jdt.core.JDTCompilerAdapter" destdir="bin" classpathref="cpath" srcdir="src" debug="true" encoding="UTF8">
+		<javac source="1.6" target="1.6" destdir="bin" classpathref="cpath"
+			srcdir="src" debug="true" encoding="UTF8" includeAntRuntime="false">
 		</javac>
 		<copy file="src/log4j.properties" tofile="bin/log4j.properties" />
 	</target>
 
 	<target name="demo" depends="compile">
-		<delete dir="test-output" />
-		<mkdir dir="test-output" />
-		<testng outputDir="test-output" classpathref="runpath" >
+		<delete dir="test-output/demo" />
+		<mkdir dir="test-output/demo" />
+		<testng outputDir="test-output/demo" classpathref="runpath">
 			<xmlfileset dir="test-xml" includes="demo.xml" />
 		</testng>
 	</target>
-	
+
 	<target name="jar" depends="compile">
 		<delete dir="build" />
 		<mkdir dir="build" />
 		<jar destfile="build/dagger-1.0.jar" basedir="bin" excludes="**/demo/">
 		</jar>
 	</target>
-	
+
 	<target name="jar-src">
 		<delete dir="build" />
 		<mkdir dir="build" />
 		<jar destfile="build/dagger-1.0-src.jar" basedir="src" excludes="**/demo/">
 		</jar>
+	</target>
+
+	<path id="runpath">
+		<pathelement location="bin" />
+		<path refid="cpath" />
+	</path>
+
+	<property name="configFile" value="prop.properties" />
+	<!-- 采用Ant正则表达式的替换方式，修改浏览器 -->
+	<target name="edit_browser" depends="compile">
+		<replaceregexp file="${configFile}" match="^BrowserCoreType(.*)"
+			replace="BrowserCoreType=${BrowserCoreType}" byline="true" />
+	</target>
+
+	<!-- Dagger Self Test -->
+	<target name="self-test" depends="edit_browser">
+		<delete dir="test-output/self-test" />
+		<mkdir dir="test-output/self-test" />
+		<testng outputDir="test-output/self-test" classpathref="runpath">
+			<xmlfileset dir="test-xml" includes="self-test.xml" />
+		</testng>
 	</target>
 
 </project>

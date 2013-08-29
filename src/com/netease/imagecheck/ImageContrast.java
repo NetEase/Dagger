@@ -15,6 +15,7 @@ import com.sun.image.codec.jpeg.JPEGImageEncoder;
 
 /**
  * ImageContrast changes image from RGB to LAB and make comparison
+ * @author LingFei
  */
 @SuppressWarnings("restriction")
 public class ImageContrast {
@@ -137,6 +138,7 @@ public class ImageContrast {
 	
 	/**
 	 * RGB color space
+	 * @author LingFei
 	 */
 	public static class ColorLAB {
 		public double l;
@@ -146,6 +148,7 @@ public class ImageContrast {
 	
 	/**
 	 * XYZ color space
+	 * @author LingFei
 	 */
 	public static class ColorXYZ {
 		public double x;
