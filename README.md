@@ -4,24 +4,27 @@ Dagger is a light, robust Web UI autotest framework based on [Selenium](http://s
 
 > Dagger is an automation framework first, it provides APIs to control browsers;
 > 
-> Dagger is a test framework then, it uses TestNg to organize testcases and TestNg's assertions are embedded in APIs above;
+> Dagger is a test framework then, it uses TestNG to organize testcases and TestNG's assertions are embedded in APIs above;
 > 
 > Dagger is a design style at last: the framework and the testcases based on it both should be light and straightforward.
 
 * Wiki: <https://github.com/NetEase/Dagger/wiki>
 * Issues: <https://github.com/NetEase/Dagger/issues>
 * Javadoc: <http://netease.github.com/Dagger>
+* Quick Start: <https://github.com/NetEase/Dagger/wiki/Quick-Start>
 * Tags: Selenium, TestNG, autotest
 
 ## Features
 
-* Easy to learn while only less then 20 APIs altogether, see [this](http://netease.github.com/Dagger/classcom_1_1netease_1_1dagger_1_1_browser_emulator.html).
-* Providing a quick start, see [this](https://github.com/NetEase/Dagger/wiki/Quick-Start).
+* Easy to learn while only less than 20 APIs altogether, see [this](http://netease.github.com/Dagger/classcom_1_1netease_1_1dagger_1_1_browser_emulator.html).
 * High speed with parallel mode which is indeed TestNG's feature, see [this](https://github.com/NetEase/Dagger/wiki/Parallel-Mode)
-* High stability with a trick on TestNg to retry failed/skipped testcases automatically, see [this](https://github.com/NetEase/Dagger/wiki/Retry-Failed-Or-Skipped-Testcases).
-* Using Chrome as default browser which is much quicker and more stable than both Firefox and IE. 
-* Firefox and IE are also supported.
+* High stability with a trick on TestNG to retry failed/skipped testcases automatically, see [this](https://github.com/NetEase/Dagger/wiki/Retry-Failed-Or-Skipped-Testcases).
+* Use Chrome as default browser which is much quicker and more stable than all Firefox, IE and Safari. 
+* Firefox, IE and Safari are also supported.
 * Capture screenshot automatically when testcase fails.
+* Support data-driven testing.
+* Contrast images and compare differences by crawling page elements and screenshots on the pixel level.
+
 
 ## Coming Soon
 
@@ -29,10 +32,18 @@ Dagger is a light, robust Web UI autotest framework based on [Selenium](http://s
 
 ## How to Use
 
-Dagger is quite suitable for a small group to kick off Web UI autotest. For this case, just checkout Dagger with Eclipse and write testcases with it.
+Dagger is quite suitable for a small group to kick off Web UI autotest. For this case, just checkout Dagger and configure maven with Eclipse and then write testcases with it.
 
-Already have an autotest framework? Please build Dagger into a .jar file before use, see [this](https://github.com/NetEase/Dagger/wiki/FAQ). 
-But first, you should download the [selenium-server-standalone-2.33.0.jar](https://selenium.googlecode.com/files/selenium-server-standalone-2.33.0.jar), or the latest one from [here](https://code.google.com/p/selenium/downloads/list).
+Already have an autotest framework? Please build Dagger into a .jar file before use, the steps are as follows: 
+*  Checkout Dagger's source code
+*  Enter the root directory
+*  Run `mvn clean package -DskipTests` in terminal
+
+Then fetch `dagger-1.2.jar` under `target` folder, or just [download]() the `dagger-1.2.jar`. See [this](https://github.com/NetEase/Dagger/wiki/FAQ) for more details.
+
+Currently, we use `selenium-server-standalone-2.37.0.jar` and `selenium-safari-driver-2.37.0.jar` , you can change the configuration in the _pom.xml_.
+
+By the way, you should download the [chromedriver_for_win_2.3.exe](http://chromedriver.storage.googleapis.com/2.3/chromedriver_win32.zip) and [iedriver_win32_2.37.0.exe](http://selenium.googlecode.com/files/IEDriverServer_Win32_2.37.0.zip) if necessary. We suggest to put the .exe files in the `res` folder. 
 
 ## Contributors
 
