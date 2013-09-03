@@ -33,6 +33,7 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
+import org.openqa.selenium.support.ui.Select;
 import org.testng.Assert;
 import com.thoughtworks.selenium.Wait;
 
@@ -216,28 +217,26 @@ public class BrowserEmulator {
 
 	/**
 	 * Hover on the page element
+	 * 
 	 * @param xpath
 	 *            the element's xpath
 	 */
 	public void mouseOver(String xpath) {
 		pause(stepInterval);
 		expectElementExistOrNot(true, xpath, timeout);
-
-		if (GlobalSettings.browserCoreType == 1) {
-			Assert.fail("Mouseover is not supported for Firefox now");
+		// First make mouse out of browser
+		Robot rb = null;
+		try {
+			rb = new Robot();
+		} catch (AWTException e) {
+			e.printStackTrace();
 		}
+		rb.mouseMove(0, 0);
+
+		// Then hover
+		WebElement we = browserCore.findElement(By.xpath(xpath));
+
 		if (GlobalSettings.browserCoreType == 2) {
-			// First make mouse out of browser
-			Robot rb = null;
-			try {
-				rb = new Robot();
-			} catch (AWTException e) {
-				e.printStackTrace();
-			}
-			rb.mouseMove(0, 0);
-			
-			// Then hover
-			WebElement we = browserCore.findElement(By.xpath(xpath));
 			try {
 				Actions builder = new Actions(browserCore);
 				builder.moveToElement(we).build().perform();
@@ -248,11 +247,24 @@ public class BrowserEmulator {
 
 			logger.info("Mouseover " + xpath);
 			return;
-		} 
-		if (GlobalSettings.browserCoreType == 3) {
-			Assert.fail("Mouseover is not supported for IE now");
 		}
-		
+
+		// Firefox and IE require multiple cycles, more than twice, to cause a
+		// hovering effect
+		if (GlobalSettings.browserCoreType == 1
+				|| GlobalSettings.browserCoreType == 3) {
+			for (int i = 0; i < 5; i++) {
+				Actions builder = new Actions(browserCore);
+				builder.moveToElement(we).build().perform();
+			}
+			logger.info("Mouseover " + xpath);
+			return;
+		}
+
+		// Selenium doesn't support the Safari browser
+		if (GlobalSettings.browserCoreType == 4) {
+			Assert.fail("Mouseover is not supported for Safari now");
+		}
 		Assert.fail("Incorrect browser type");
 	}
 
@@ -449,4 +461,26 @@ public class BrowserEmulator {
 		logger.error(log);
 		Assert.fail(log);
 	}
+	
+	 
+    /**
+     * Return text from specified web element.
+     * @param xpath
+     * @return
+     */
+    public String getText(String xpath) {
+            WebElement element = this.getBrowserCore().findElement(By.xpath(xpath)); 
+            return element.getText();
+    }
+    
+    /**
+     * Select an option by visible text from &lt;select&gt; web element.
+     * @param xpath
+     * @param option
+     */
+    public void select(String xpath, String option) {
+            WebElement element = this.browserCore.findElement(By.xpath(xpath));
+            Select select = new Select(element);
+            select.selectByVisibleText(option);
+    }
 }
