@@ -65,6 +65,7 @@ public class BrowserEmulator {
 	private void setupBrowserCoreType(int type) {
 		if (type == 1) {
 			browserCore = new FirefoxDriver();
+			browserCore.manage().window().maximize();
 			logger.info("Using Firefox");
 			return;
 		}
