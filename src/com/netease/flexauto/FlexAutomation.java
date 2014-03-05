@@ -36,7 +36,7 @@ public class FlexAutomation {
 	JavascriptExecutor js;
 	String flashObjId;
 	int stepInterval = Integer.parseInt(GlobalSettings.stepInterval);
-	int pollingTimes = Integer.parseInt(GlobalSettings.timeout) / stepInterval;
+	int pollingTimes = stepInterval == 0 ? 60 :  Integer.parseInt(GlobalSettings.timeout) / stepInterval;
 
 	/**
 	 * @param wrapper
@@ -124,7 +124,6 @@ public class FlexAutomation {
 					if (r)
 						break;
 				} catch (Exception e) {
-					// e.printStackTrace();
 				}
 
 			}
@@ -173,7 +172,7 @@ public class FlexAutomation {
 			getR = (String) js.executeScript(automationJS);
 		} catch (Exception e) {
 			e.printStackTrace();
-			Assert.fail();
+			Assert.fail("flex automation failed to perform the following operation: " + automationJS);
 		}
 
 		return getR;

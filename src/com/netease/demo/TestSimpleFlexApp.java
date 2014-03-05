@@ -17,6 +17,7 @@
 package com.netease.demo;
 
 import com.netease.dagger.BrowserEmulator;
+import com.netease.dagger.LogTools;
 import com.netease.flexauto.FlexAutomation;
 
 /**
@@ -40,7 +41,7 @@ public class TestSimpleFlexApp {
 		fa.verifyProperty(new String[]{"id","lb"}, "text", "flex automation is simple");
 		
 		// get the button's value of label property
-		System.out.println("The label of the button is - " + fa.getProperty(new String[]{"id","inputBtn"}, "label"));
+		LogTools.log("The label of the button is - " + fa.getProperty(new String[]{"id","inputBtn"}, "label"));
 
 		be.quit();
 	}
