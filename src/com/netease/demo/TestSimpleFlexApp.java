@@ -27,7 +27,7 @@ import com.netease.flexauto.FlexAutomation;
 public class TestSimpleFlexApp {
 	
 	public static void main(String[] args) throws Exception {
-		String flexUrl = "http://10.240.136.22/demo.html";
+		String flexUrl = "http://ddook007.github.io/demo/demo.html";
 		String flexId = "demo";
 		BrowserEmulator be = new BrowserEmulator();
 		be.open(flexUrl);
