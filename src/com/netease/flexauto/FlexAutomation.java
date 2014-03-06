@@ -148,7 +148,7 @@ public class FlexAutomation {
 		String automationJS = "return document.getElementById('" + flashObjId + "')." + "verifyFromSelenium('" + flexmonkeyCommand + "','')";
 		pollingCommand(automationJS);
 		// avoiding unnecessary logging
-		if (propertyString.equals("initialized") && expectedValue.equals("true"))
+		if ("initialized".equals(propertyString) && "true".equals(expectedValue))
 			return;
 		LogTools.log("flex element: " + locator + " is as expected in prop:value - " + propertyString + ":\"" + expectedValue + "\"");
 
