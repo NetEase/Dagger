@@ -27,7 +27,9 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriverBackedSelenium;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriverService;
+import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -64,7 +66,8 @@ public class BrowserEmulator {
 
 	private void setupBrowserCoreType(int type) {
 		if (type == 1) {
-			browserCore = new FirefoxDriver();
+			File pathBinary = new File(GlobalSettings.firefoxBinaryPath);
+			browserCore = new FirefoxDriver(new FirefoxBinary(pathBinary), new FirefoxProfile());
 			logger.info("Using Firefox");
 			return;
 		}
