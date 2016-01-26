@@ -38,7 +38,7 @@ public class GlobalSettings {
 
 	public static String timeout = prop.getProperty("Timeout", "30000");
 	
-	public static String baseStorageUrl = prop.getProperty("baseStorageUrl", (new File("screenshot")).getParent());
+	public static String baseStorageUrl = prop.getProperty("baseStorageUrl", System.getProperty("user.dir"));
 
 	public static String getProperty(String property) {
 		return prop.getProperty(property);

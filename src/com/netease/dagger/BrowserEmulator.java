@@ -19,12 +19,16 @@ package com.netease.dagger;
 import java.awt.AWTException;
 import java.awt.Robot;
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.io.File;
 import java.io.IOException;
+
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriverBackedSelenium;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -33,11 +37,12 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.Reporter;
 
-import com.thoughtworks.selenium.Wait;
 
 /**
  * BrowserEmulator is based on Selenium2 and adds some enhancements
@@ -45,10 +50,10 @@ import com.thoughtworks.selenium.Wait;
  */
 public class BrowserEmulator {
 
-	RemoteWebDriver browserCore;
-	WebDriverBackedSelenium browser;
+	WebDriver browserCore;
 	ChromeDriverService chromeServer;
 	JavascriptExecutor javaScriptExecutor;
+	String currenWindowHanler;
 	
 	int stepInterval = Integer.parseInt(GlobalSettings.stepInterval);
 	int timeout = Integer.parseInt(GlobalSettings.timeout);
@@ -57,8 +62,9 @@ public class BrowserEmulator {
 
 	public BrowserEmulator() {
 		setupBrowserCoreType(GlobalSettings.browserCoreType);
-		browser = new WebDriverBackedSelenium(browserCore, "http://www.163.com/");
 		javaScriptExecutor = (JavascriptExecutor) browserCore;
+		browserCore.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+		browserCore.manage().window().maximize();
 		logger.info("Started BrowserEmulator");
 	}
 
@@ -102,17 +108,10 @@ public class BrowserEmulator {
 	 * Get the WebDriver instance embedded in BrowserEmulator
 	 * @return a WebDriver instance
 	 */
-	public RemoteWebDriver getBrowserCore() {
+	public WebDriver getBrowserCore() {
 		return browserCore;
 	}
 
-	/**
-	 * Get the WebDriverBackedSelenium instance embedded in BrowserEmulator
-	 * @return a WebDriverBackedSelenium instance
-	 */
-	public WebDriverBackedSelenium getBrowser() {
-		return browser;
-	}
 	
 	/**
 	 * Get the JavascriptExecutor instance embedded in BrowserEmulator
@@ -130,14 +129,19 @@ public class BrowserEmulator {
 	public void open(String url) {
 		pause(stepInterval);
 		try {
-			browser.open(url);
+			browserCore.get(url);
 		} catch (Exception e) {
-			e.printStackTrace();
-			handleFailure("Failed to open url " + url);
+			onTimeOut();
 		}
 		logger.info("Opened url " + url);
 	}
-
+	/**
+	 * using js to stop the browser
+	 */
+	private void onTimeOut() {
+		javaScriptExecutor.executeScript("window.stop();");
+	}
+	
 	/**
 	 * Quit the browser
 	 */
@@ -176,7 +180,7 @@ public class BrowserEmulator {
 	 */
 	private void clickTheClickable(String xpath, long startTime, int timeout) throws Exception {
 		try {
-			browserCore.findElementByXPath(xpath).click();
+			browserCore.findElement(By.xpath(xpath)).click();
 		} catch (Exception e) {
 			if (System.currentTimeMillis() - startTime > timeout) {
 				logger.info("Element " + xpath + " is unclickable");
@@ -184,9 +188,29 @@ public class BrowserEmulator {
 			} else {
 				Thread.sleep(500);
 				logger.info("Element " + xpath + " is unclickable, try again");
-				clickTheClickable(xpath, startTime, timeout);
+				//if can't click the Element using clickTheClickable, change js
+				clickByJS(xpath);
 			}
 		}
+	}
+	
+	/**
+	 * Click the page element by JS, this method is used to resolve the problem
+	 * that the target element is not clickable.
+	 * 
+	 * @param xpath
+	 *            the element's xpath
+	 */
+	private void clickByJS(String xpath) {
+		pause(stepInterval);
+		expectElementExistOrNot(true, xpath, timeout);
+		try {
+			WebElement we = browserCore.findElement(By.xpath(xpath));
+			javaScriptExecutor.executeScript("arguments[0].click();", we);
+		} catch (Exception e) {
+			handleFailure("Failed to click " + xpath);
+		}
+		logger.info("Clicked " + xpath);
 	}
 
 	/**
@@ -277,20 +301,99 @@ public class BrowserEmulator {
 	 */
 	public void selectWindow(String windowTitle) {
 		pause(stepInterval);
-		browser.selectWindow(windowTitle);
+		browserCore.switchTo().window(getHandle(windowTitle));
 		logger.info("Switched to window " + windowTitle);
 	}
 
+	/**
+	 * Get the Handle with windowTitle
+	 * 
+	 * @param windowTitle the window/tab's title
+	 */
+	private String getHandle(String windowTitle) {
+		String handle = null;
+		Set<String> handles = browserCore.getWindowHandles();
+		for (String h : handles) {
+			if (browserCore.switchTo().window(h).getTitle().equals(windowTitle)) {
+				handle = h;
+				break;
+			}
+		}
+		if (handle == null)
+			Assert.fail("Can't find the widow or tab with windowTitle: "
+					+ windowTitle);
+		return handle;
+	}
+	
+	/**
+	 * get the popupwindow
+	 */
+	public void selectPopUpWindow() {
+		currenWindowHanler = getcurrentWindowHandle();
+		// 得到所有窗口的句柄
+		Set<String> handles = browserCore.getWindowHandles();
+		Iterator<String> it = handles.iterator();
+		while (it.hasNext()) {
+			String handle = it.next();
+			if (currenWindowHanler.equals(handle))
+				continue;
+			browserCore.switchTo().window(handle);
+			logger.info("Switched to window " + browserCore.getTitle());
+			// System.out.println("title,url = "+driver.getTitle()+","+driver.getCurrentUrl());
+		}
+
+	}
+
+	/**
+	 * close the popupwindow
+	 */
+	public void closePopUpWindow() {
+		browserCore.close();
+		browserCore.switchTo().window(currenWindowHanler);
+	}
+    /**
+     * get the current windowHandle
+     * @return
+     */
+	private String getcurrentWindowHandle() {
+		return browserCore.getWindowHandle();
+	}
+	
 	/**
 	 * Enter the iframe
 	 * @param xpath
 	 *            the iframe's xpath
 	 */
 	public void enterFrame(String xpath) {
-		pause(stepInterval);
-		browserCore.switchTo().frame(browserCore.findElementByXPath(xpath));
-		logger.info("Entered iframe " + xpath);
+	    pause(stepInterval);
+		try{
+		   browserCore.switchTo().frame(expectElementExistOrNot(true, xpath, timeout));
+		
+		}catch(Exception e){
+			handleFailure("Failed to switch the frame " + xpath);
+		}
+		logger.info("Switch to the frame " + xpath);
 	}
+	
+	 /**
+     * Select a frame by its (zero-based) index. Selecting a frame by index is equivalent to the
+     * JS expression window.frames[index] where "window" is the DOM window represented by the
+     * current context. Once the frame has been selected, all subsequent calls on the WebDriver
+     * interface are made to that frame.
+     * 
+     * @param index (zero-based) index
+     */
+		public void enterFrame(int index){
+			pause(stepInterval);
+			
+			try{
+			   browserCore.switchTo().frame(index);
+			
+			}catch(Exception e){
+				handleFailure("Failed to switch the "+ index +" frame.\t" + e.toString());
+			}
+			logger.info("Switch to the "+ index +" frame");
+		}
 
 	/**
 	 * Leave the iframe
@@ -364,25 +467,22 @@ public class BrowserEmulator {
 	 *            timeout in millisecond
 	 */
 	public void expectTextExistOrNot(boolean expectExist, final String text, int timeout) {
-		if (expectExist) {
-			try {
-				new Wait() {
-					public boolean until() {
-						return isTextPresent(text, -1);
-					}
-				}.wait("Failed to find text " + text, timeout);
-			} catch (Exception e) {
-				e.printStackTrace();
-				handleFailure("Failed to find text " + text);
-			}
-			logger.info("Found desired text " + text);
-		} else {
-			if (isTextPresent(text, timeout)) {
-				handleFailure("Found undesired text " + text);
+
+			if (expectExist) {
+				if(isTextPresent(text,timeout)){
+					logger.info("Found desired text " + text);
+				}else{
+					handleFailure("Not found desired text " + text);
+				}
+			
 			} else {
-				logger.info("Not found undesired text " + text);
+				if (isTextPresent(text, timeout)) {
+					handleFailure("Found undesired text " + text);
+				} else {
+					logger.info("Not found undesired text " + text);
+				}
 			}
-		}
+		
 	}
 
 	/**
@@ -397,26 +497,33 @@ public class BrowserEmulator {
 	 * @param timeout
 	 *            timeout in millisecond
 	 */
-	public void expectElementExistOrNot(boolean expectExist, final String xpath, int timeout) {
-		if (expectExist) {
-			try {
-				new Wait() {
-					public boolean until() {
-						return isElementPresent(xpath, -1);
-					}
-				}.wait("Failed to find element " + xpath, timeout);
-			} catch (Exception e) {
-				e.printStackTrace();
-				handleFailure("Failed to find element " + xpath);
-			}
-			logger.info("Found desired element " + xpath);
-		} else {
-			if (isElementPresent(xpath, timeout)) {
-				handleFailure("Found undesired element " + xpath);
+	public WebElement expectElementExistOrNot(boolean expectExist, final String xpath, int timeout) {
+
+			WebElement element = null;
+			if (expectExist) {
+				try {
+					element = new WebDriverWait(browserCore, timeout/1000).until(ExpectedConditions
+							.visibilityOfElementLocated(By.xpath(xpath)));
+					logger.info("Found desired element " + xpath);
+				} catch (Exception e) {
+					handleFailure("Failed to find element " + xpath);
+				}
+				
 			} else {
-				logger.info("Not found undesired element " + xpath);
+				
+				try {
+					new WebDriverWait(browserCore, timeout/6000).until(ExpectedConditions
+							.invisibilityOfElementLocated(By.xpath(xpath)));
+					handleFailure("Found undesired element " + xpath);
+				} catch (Exception e) {
+					logger.info("Not found undesired element " + xpath);
+				}
+				
+				return null;
 			}
-		}
+			
+			return element;
+		
 	}
 
 	/**
@@ -429,8 +536,10 @@ public class BrowserEmulator {
 	 * @return
 	 */
 	public boolean isTextPresent(String text, int time) {
-		pause(time);
-		boolean isPresent = browser.isTextPresent(text);
+		pause(stepInterval);
+	
+		boolean isPresent = browserCore.findElement(By.tagName("body")).getText()
+				.contains(text);
 		if (isPresent) {
 			logger.info("Found text " + text);
 			return true;
@@ -452,7 +561,7 @@ public class BrowserEmulator {
 	 */
 	public boolean isElementPresent(String xpath, int time) {
 		pause(time);
-		boolean isPresent = browser.isElementPresent(xpath) && browserCore.findElementByXPath(xpath).isDisplayed();
+		boolean isPresent = browserCore.findElement(By.xpath(xpath)).isDisplayed();
 		if (isPresent) {
 			logger.info("Found element " + xpath);
 			return true;

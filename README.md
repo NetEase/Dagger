@@ -1,3 +1,7 @@
+####注意:主要改写了`BrowserEmulator`类, 去掉过时的`WebdriverBackedSelenium`类 及`wait`，全部改用`selenium webdriver`方法，还添加了一些比较好用的方法。
+
+这样就可以使用selenium webdriver的最新版本了，具体在pom.xml里更改引入的版本号
+***
 ﻿## Dagger - a light, robust Web UI autotest framework
 
 Dagger is a light, robust Web UI autotest framework based on [Selenium](http://seleniumhq.org/) and [TestNG](http://testng.org/doc/index.html).（中文介绍参见[这里](https://github.com/NetEase/Dagger/wiki/Dagger)）
